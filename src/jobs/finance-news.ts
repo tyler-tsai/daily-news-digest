@@ -1,7 +1,7 @@
 import { fetchRSSFeeds, FINANCE_RSS_FEEDS } from "../services/rss";
 import { fetchFinanceNews } from "../services/newsapi";
 import { summarizeNews } from "../services/openai";
-import { sendFinanceDigest } from "../services/telegram";
+import { sendWorldDigest, sendFinanceDigest } from "../services/telegram";
 import { NewsItem } from "../types";
 
 export async function runFinanceNewsJob(): Promise<void> {
@@ -38,12 +38,17 @@ export async function runFinanceNewsJob(): Promise<void> {
 
     console.log(`[Finance News] ${unique.length} unique articles after dedup`);
 
-    // Summarize with OpenAI
-    const digest = await summarizeNews(unique, "finance");
-    console.log(`[Finance News] Generated ${digest.length} digest items`);
+    // Summarize with OpenAI — world news and finance in parallel
+    const [worldDigest, financeDigest] = await Promise.all([
+      summarizeNews(unique, "world"),
+      summarizeNews(unique, "finance"),
+    ]);
+    console.log(`[Finance News] Generated ${worldDigest.length} world + ${financeDigest.length} finance digest items`);
 
-    // Send to Telegram
-    await sendFinanceDigest(digest);
+    // Send to Telegram — world first, then finance
+    await sendWorldDigest(worldDigest);
+    await new Promise((r) => setTimeout(r, 2000));
+    await sendFinanceDigest(financeDigest);
     console.log("[Finance News] Job completed successfully");
   } catch (err) {
     console.error(`[Finance News] Job failed: ${err}`);

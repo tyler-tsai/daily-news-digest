@@ -8,6 +8,7 @@ export interface NewsItem {
 
 export interface DigestMessage {
   title: string;
+  summary?: string;
   url: string;
   source: string;
 }

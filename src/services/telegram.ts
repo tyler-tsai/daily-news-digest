@@ -1,12 +1,19 @@
 import TelegramBot from "node-telegram-bot-api";
 import { config } from "../config";
 import { DigestMessage } from "../types";
+import type { NewsCategory } from "./openai";
 
 const bot = new TelegramBot(config.telegram.botToken);
 
 const MAX_MESSAGE_LENGTH = 4000; // Telegram limit is 4096, leave buffer
 
-function formatDigest(items: DigestMessage[], category: "ai" | "finance"): string[] {
+const CATEGORY_HEADERS: Record<NewsCategory, string> = {
+  ai: "🤖 AI 科技日報",
+  world: "🌍 國際新聞日報",
+  finance: "📊 國際財經與美股日報",
+};
+
+function formatDigest(items: DigestMessage[], category: NewsCategory): string[] {
   const now = new Date().toLocaleDateString("zh-TW", {
     timeZone: "Asia/Taipei",
     year: "numeric",
@@ -14,15 +21,14 @@ function formatDigest(items: DigestMessage[], category: "ai" | "finance"): strin
     day: "2-digit",
   });
 
-  const header =
-    category === "ai"
-      ? `🤖 AI 科技日報 — ${now}\n${"═".repeat(28)}`
-      : `📊 國際財經日報 — ${now}\n${"═".repeat(28)}`;
+  const header = `${CATEGORY_HEADERS[category]} — ${now}\n${"═".repeat(28)}`;
 
-  const formattedItems = items.map(
-    (item, i) =>
-      `${i + 1}. ${escapeHtml(item.title)}  <a href="${item.url}">Read more</a>`
-  );
+  const formattedItems = items.map((item, i) => {
+    const title = `${i + 1}. <b>${escapeHtml(item.title)}</b>`;
+    const summary = item.summary ? `\n   ${escapeHtml(item.summary)}` : "";
+    const link = `\n   <a href="${item.url}">Read more</a>`;
+    return title + summary + link;
+  });
 
   // Split into multiple messages if too long
   const messages: string[] = [];
@@ -50,13 +56,19 @@ function escapeHtml(text: string): string {
     .replace(/>/g, "&gt;");
 }
 
+const CATEGORY_EMPTY_LABELS: Record<NewsCategory, string> = {
+  ai: "AI 科技",
+  world: "國際",
+  finance: "國際財經",
+};
+
 export async function sendDigest(
   chatId: string,
   items: DigestMessage[],
-  category: "ai" | "finance"
+  category: NewsCategory
 ): Promise<void> {
   if (items.length === 0) {
-    await bot.sendMessage(chatId, `⚠️ 今日暫無${category === "ai" ? "AI 科技" : "國際財經"}新聞更新`);
+    await bot.sendMessage(chatId, `⚠️ 今日暫無${CATEGORY_EMPTY_LABELS[category]}新聞更新`);
     return;
   }
 
@@ -80,6 +92,10 @@ export async function sendDigest(
 
 export async function sendAIDigest(items: DigestMessage[]): Promise<void> {
   await sendDigest(config.telegram.aiGroupId, items, "ai");
+}
+
+export async function sendWorldDigest(items: DigestMessage[]): Promise<void> {
+  await sendDigest(config.telegram.financeGroupId, items, "world");
 }
 
 export async function sendFinanceDigest(items: DigestMessage[]): Promise<void> {
