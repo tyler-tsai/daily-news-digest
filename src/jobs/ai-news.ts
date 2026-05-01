@@ -42,7 +42,7 @@ export async function runAINewsJob(): Promise<void> {
     const digest = await summarizeNews(unique, "ai");
     console.log(`[AI News] Generated ${digest.length} digest items`);
 
-    // Send to Telegram
+    // Send to Telegram + Discord
     await sendAIDigest(digest);
     console.log("[AI News] Job completed successfully");
   } catch (err) {
