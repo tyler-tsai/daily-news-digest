@@ -5,13 +5,15 @@ import type { NewsCategory } from "./openai";
 const MAX_LENGTH = 2000;
 
 const CATEGORY_HEADERS: Record<NewsCategory, string> = {
-  ai: "🤖 AI 科技日報",
+  ai: "🤖 AI 產業日報",
+  "ai-builder": "🛠️ AI 工程與工具日報",
   world: "🌍 國際新聞日報",
   finance: "📊 國際財經與美股日報",
 };
 
 const CATEGORY_EMPTY_LABELS: Record<NewsCategory, string> = {
-  ai: "AI 科技",
+  ai: "AI 產業",
+  "ai-builder": "AI 工程",
   world: "國際",
   finance: "國際財經",
 };

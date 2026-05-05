@@ -14,6 +14,11 @@ export const config = {
     botToken: requireEnv("TELEGRAM_BOT_TOKEN"),
     aiGroupId: requireEnv("TG_GROUP_AI"),
     financeGroupId: requireEnv("TG_GROUP_FINANCE"),
+    // Separate bot/group for AI Trending — keeps the trending feed (which
+    // sends one message per repo) out of the news digest chat. Falls back to
+    // the main bot+AI group if not configured.
+    trendingBotToken: process.env.TELEGRAM_BOT_TOKEN_TRENDING || requireEnv("TELEGRAM_BOT_TOKEN"),
+    trendingGroupId: process.env.TG_GROUP_TRENDING || requireEnv("TG_GROUP_AI"),
   },
   openai: {
     apiKey: requireEnv("OPENAI_API_KEY"),

@@ -6,6 +6,9 @@
   "scripts": {
     "dev": "tsx src/index.ts",
     "run-now": "tsx src/index.ts --run-now",
+    "run-now:ai": "tsx src/index.ts --run-now=ai",
+    "run-now:builder": "tsx src/index.ts --run-now=ai-builder",
+    "run-now:finance": "tsx src/index.ts --run-now=finance",
     "build": "tsc",
     "start": "node dist/index.js",
     "pm2:start": "pnpm exec pm2 start ecosystem.config.js",
@@ -18,6 +21,7 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "cheerio": "^1.2.0",
     "dotenv": "^17.3.1",
     "newsapi": "^2.4.1",
     "node-cron": "^4.2.1",
@@ -30,7 +34,7 @@
     "@types/node": "^25.2.3",
     "@types/node-cron": "^3.0.11",
     "@types/node-telegram-bot-api": "^0.64.13",
-    "tsx": "^4.21.0",
-    "pm2": "^6.0.14"
+    "pm2": "^6.0.14",
+    "tsx": "^4.21.0"
   }
 }
