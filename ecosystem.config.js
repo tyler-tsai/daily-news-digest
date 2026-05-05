@@ -4,6 +4,7 @@ module.exports = {
       name: "daily-news-digest",
       script: "node_modules/.bin/tsx",
       args: "src/index.ts",
+      interpreter: "none",
       cwd: __dirname,
       watch: false,
       autorestart: true,

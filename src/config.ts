@@ -22,6 +22,10 @@ export const config = {
   newsapi: {
     apiKey: requireEnv("NEWSAPI_KEY"),
   },
+  discord: {
+    aiWebhook: process.env.DISCORD_WEBHOOK_AI || "",
+    financeWebhook: process.env.DISCORD_WEBHOOK_FINANCE || "",
+  },
   cron: {
     schedule: process.env.CRON_SCHEDULE || "0 8 * * *",
     timezone: process.env.TZ || "Asia/Taipei",
